@@ -20,10 +20,9 @@ MISSION_TAB = "missions"
 
 
 def get_client():
-    service_json = json.loads(st.secrets["SERVICE_ACCOUNT_JSON"])
-    creds = ServiceAccountCredentials.from_json_keyfile_dict(service_json, SCOPE)
-    client = gspread.authorize(creds)
-    return client
+    creds_dict = dict(st.secrets["gcp_service_account"])
+    creds = ServiceAccountCredentials.from_json_keyfile_dict(creds_dict, SCOPE)
+    return gspread.authorize(creds)
 
 
 
@@ -106,4 +105,5 @@ def assign_mission(client, project_id, pilot_name, drone_id):
     )
 
     return ok1 and ok2, msg1 + " | " + msg2
+
 
