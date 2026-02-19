@@ -1,5 +1,4 @@
 import streamlit as st
-from logic import handle_chat_query
 
 from google_sheets import (
     get_client,
@@ -304,6 +303,7 @@ def handle_chat_query(user_input, pilots_df, drones_df, missions_df):
         return f"Suggested Assignment for {project_id}:\nPilot: {best_pilot}\nDrone: {best_drone}"
 
     return "Try asking: 'available pilots', 'available drones', or 'suggest assignment for PRJ001'."
+
 
 
 
