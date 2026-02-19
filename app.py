@@ -1,4 +1,6 @@
 import streamlit as st
+from logic import handle_chat_query
+
 from google_sheets import (
     get_client,
     read_sheet,
@@ -248,4 +250,60 @@ elif menu == "Skylark AI Chat Agent":
 
         st.session_state.messages.append({"role": "assistant", "content": reply})
         st.chat_message("assistant").write(reply)
+def handle_chat_query(user_input, pilots_df, drones_df, missions_df):
+    q = user_input.lower().strip()
+
+    if "available pilots" in q or "pilots" in q:
+        available = pilots_df[pilots_df["status"].str.lower() == "available"]
+        if available.empty:
+            return "No available pilots found."
+        return f"Available pilots:\n\n{available[['pilot_id','name','skills','certifications','location']].to_string(index=False)}"
+
+    if "available drones" in q or "drones" in q:
+        available = drones_df[drones_df["status"].str.lower() == "available"]
+        if available.empty:
+            return "No available drones found."
+        return f"Available drones:\n\n{available[['drone_id','model','capabilities','location','weather_resistance']].to_string(index=False)}"
+
+    if "suggest assignment for" in q:
+        project_id = user_input.split()[-1].strip()
+        mission = missions_df[missions_df["project_id"] == project_id]
+
+        if mission.empty:
+            return f"Mission {project_id} not found."
+
+        mission_row = mission.iloc[0]
+        loc = str(mission_row["location"]).lower()
+        skill_req = str(mission_row["required_skills"]).lower()
+        cert_req = str(mission_row["required_certs"]).lower()
+
+        # filter pilots
+        pilots_ok = pilots_df[
+            (pilots_df["status"].str.lower() == "available") &
+            (pilots_df["location"].str.lower() == loc) &
+            (pilots_df["skills"].str.lower().str.contains(skill_req)) &
+            (pilots_df["certifications"].str.lower().str.contains(cert_req))
+        ]
+
+        if pilots_ok.empty:
+            return f"No suitable pilot found for {project_id}."
+
+        best_pilot = pilots_ok.iloc[0]["name"]
+
+        # filter drones
+        drones_ok = drones_df[
+            (drones_df["status"].str.lower() == "available") &
+            (drones_df["location"].str.lower() == loc)
+        ]
+
+        if drones_ok.empty:
+            return f"Pilot found ({best_pilot}) but no suitable drone available."
+
+        best_drone = drones_ok.iloc[0]["drone_id"]
+
+        return f"Suggested Assignment for {project_id}:\nPilot: {best_pilot}\nDrone: {best_drone}"
+
+    return "Try asking: 'available pilots', 'available drones', or 'suggest assignment for PRJ001'."
+
+
 
