@@ -1,5 +1,7 @@
 import gspread
 import pandas as pd
+import json
+import streamlit as st
 from oauth2client.service_account import ServiceAccountCredentials
 
 SCOPE = [
@@ -17,10 +19,12 @@ MISSION_SHEET = "missions"
 MISSION_TAB = "missions"
 
 
-def get_client(json_path="service_account.json"):
-    creds = ServiceAccountCredentials.from_json_keyfile_name(json_path, SCOPE)
+def get_client():
+    service_json = json.loads(st.secrets["SERVICE_ACCOUNT_JSON"])
+    creds = ServiceAccountCredentials.from_json_keyfile_dict(service_json, SCOPE)
     client = gspread.authorize(creds)
     return client
+
 
 
 def read_sheet(client, sheet_name, tab_name):
@@ -102,3 +106,4 @@ def assign_mission(client, project_id, pilot_name, drone_id):
     )
 
     return ok1 and ok2, msg1 + " | " + msg2
+
