@@ -196,7 +196,7 @@ elif menu == "Mission Assignment":
 
 
 # ---------------- AI CHAT AGENT ----------------
-elif menu == "Skylark AI Chat Agent": 
+elif menu == "AI Chat Agent": 
     st.subheader("🤖 Conversational DroneOps Agent")
 
     if "messages" not in st.session_state:
@@ -303,6 +303,7 @@ def handle_chat_query(user_input, pilots_df, drones_df, missions_df):
         return f"Suggested Assignment for {project_id}:\nPilot: {best_pilot}\nDrone: {best_drone}"
 
     return "Try asking: 'available pilots', 'available drones', or 'suggest assignment for PRJ001'."
+
 
 
 
