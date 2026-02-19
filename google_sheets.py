@@ -1,14 +1,15 @@
 import gspread
 import pandas as pd
-import json
 import streamlit as st
 from oauth2client.service_account import ServiceAccountCredentials
 
+# Google API Scope
 SCOPE = [
     "https://www.googleapis.com/auth/spreadsheets",
     "https://www.googleapis.com/auth/drive"
 ]
 
+# Sheet names and tabs
 PILOT_SHEET = "pilot_roster"
 PILOT_TAB = "pilot_roster"
 
@@ -19,19 +20,22 @@ MISSION_SHEET = "missions"
 MISSION_TAB = "missions"
 
 
+# ---------------- CONNECT GOOGLE SHEETS ----------------
 def get_client():
     creds_dict = dict(st.secrets["gcp_service_account"])
     creds = ServiceAccountCredentials.from_json_keyfile_dict(creds_dict, SCOPE)
-    return gspread.authorize(creds)
+    client = gspread.authorize(creds)
+    return client
 
 
-
+# ---------------- READ SHEET ----------------
 def read_sheet(client, sheet_name, tab_name):
     ws = client.open(sheet_name).worksheet(tab_name)
     data = ws.get_all_records()
     return pd.DataFrame(data)
 
 
+# ---------------- UPDATE CELL HELPER ----------------
 def update_cell_by_match(client, sheet_name, tab_name, match_column, match_value, update_column, new_value):
     ws = client.open(sheet_name).worksheet(tab_name)
     records = ws.get_all_records()
@@ -58,7 +62,6 @@ def update_cell_by_match(client, sheet_name, tab_name, match_column, match_value
 
 
 # ---------------- REQUIRED WRITES ----------------
-
 def update_pilot_status(client, pilot_name, new_status):
     return update_cell_by_match(
         client,
@@ -105,5 +108,3 @@ def assign_mission(client, project_id, pilot_name, drone_id):
     )
 
     return ok1 and ok2, msg1 + " | " + msg2
-
-
