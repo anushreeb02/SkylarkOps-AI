@@ -12,7 +12,8 @@ st.set_page_config(page_title="DroneOpsAgent", layout="wide")
 st.title("🚁 SkylarkOps AI - Drone Operations Coordinator")
 
 
-client = get_client("service_account.json")
+client = get_client()
+
 
 # load sheets
 pilots_df = read_sheet(client, "pilot_roster", "pilot_roster")
@@ -247,3 +248,4 @@ elif menu == "Skylark AI Chat Agent":
 
         st.session_state.messages.append({"role": "assistant", "content": reply})
         st.chat_message("assistant").write(reply)
+
