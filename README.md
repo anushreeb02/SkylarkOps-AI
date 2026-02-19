@@ -4,7 +4,7 @@ SkylarkOps AI is a Streamlit-based AI agent designed to automate the core respon
 It manages pilot rosters, drone inventory, mission assignments, and detects scheduling/equipment conflicts using real-time Google Sheets data.
 
 ---
-
+Author - Anushree B
 ## 📌 Features
 
 ### ✅ 1. Pilot Roster Management
@@ -72,3 +72,4 @@ And writes updates back to:
 - Pilot status updates
 - Drone status updates
 - Mission assignments
+
